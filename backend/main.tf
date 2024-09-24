@@ -1,3 +1,5 @@
+
+
 terraform {
   required_providers {
     azurerm = {
@@ -5,15 +7,25 @@ terraform {
       version = "4.0.1"
     }
   }
+  backend "azurerm" {
+    resource_group_name   = "SSR-tfstate-backend-rg"
+    storage_account_name  = "sabe63ui74zo"
+    container_name        = "ssrterraformcontainerbackend"
+    key                   = "ssr.backend.terraform.tfstate" 
+  }
 }
+
 
 provider "azurerm" {
+    features {
+        resource_group {
+          prevent_deletion_if_contains_resources = false
+        }
+    }
   subscription_id = "7c064ed9-c59f-4935-938b-f1a654d088a7"
-  features {}
 }
-
 resource "random_string" "random_string" {
-  length  = 6      # Adjust the length as needed
+  length  = 8      # Adjust the length as needed
   special = false  # Set to true if you want special characters
   upper   = false  # Set to true if you want uppercase letters
 }
@@ -22,12 +34,12 @@ resource "random_string" "random_string" {
 resource "azurerm_resource_group" "tfstate_rg_backend" {
   name     = var.rg_backend_name
   location = var.location
-}
+} 
 
 resource "azurerm_storage_account" "sa_backend" {
   name                     = "${lower(var.sa_backend_base_name)}${random_string.random_string.result}"
-  resource_group_name      = azurerm_resource_group.rg_backend.name
-  location                 = azurerm_resource_group.rg_backend.location
+  resource_group_name      = azurerm_resource_group.tfstate_rg_backend.name
+  location                 = azurerm_resource_group.tfstate_rg_backend.location
   account_tier             = "Standard"
   account_replication_type = "LRS"
 }
@@ -42,8 +54,8 @@ data "azurerm_client_config" "current" {}
 
 resource "azurerm_key_vault" "kv_backend" {
   name                        = "${lower(var.kv_backend_name)}${random_string.random_string.result}"
-  location                    = azurerm_resource_group.rg_backend.location
-  resource_group_name         = azurerm_resource_group.rg_backend.name
+  location                    = azurerm_resource_group.tfstate_rg_backend.location
+  resource_group_name         = azurerm_resource_group.tfstate_rg_backend.name
   enabled_for_disk_encryption = true
   tenant_id                   = data.azurerm_client_config.current.tenant_id
   soft_delete_retention_days  = 7
