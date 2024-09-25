@@ -25,6 +25,7 @@ jobs:
         shell: pwsh  # Specify PowerShell as the shell
         run: |
           # Use Git to get the last commit message and write it to a file
+          pwd
           git log -n 1 --pretty=format:'%s' > commit_message.txt
           # Set the commit message as an environment variable
           echo "COMMIT_MESSAGE=$(Get-Content commit_message.txt)" > $GITHUB_ENV
