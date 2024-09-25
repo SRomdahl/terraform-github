@@ -25,6 +25,7 @@ jobs:
         run: |
           # Get the last commit message
           COMMIT_MSG=$(git log -n 1 --pretty=format:'%s')
+          # Set the COMMIT_MESSAGE environment variable
           echo "COMMIT_MESSAGE=${COMMIT_MSG:-'No commit message found'}" >> $GITHUB_ENV
           # Print the commit message for debugging
           echo "Last commit message: $COMMIT_MSG"
@@ -40,7 +41,7 @@ jobs:
         working-directory: ${{ env.WORKING_DIR }}
 
       - name: 'Conditionally run terraform action'
-        shell: pwsh  # Use PowerShell
+        shell: pwsh  # Use PowerShell for this step
         run: |
           # Get the commit message from the environment variable
           $commitMessage = $env:COMMIT_MESSAGE
