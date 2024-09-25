@@ -50,7 +50,7 @@ jobs:
           Write-Host "Commit Message: '$commitMessage'"
 
           # Check if the commit message contains "destroy"
-          if ($commitMessage -like "*destroy*") {
+          if (commit_message.txt -like "*destroy*") {
             Write-Host "Executing terraform destroy..."
             terraform destroy -auto-approve
           } else {
