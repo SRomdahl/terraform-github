@@ -27,7 +27,7 @@ jobs:
           # Use Git to get the last commit message and write it to a file
           git log -n 1 --pretty=format:'%s' > commit_message.txt
           # Set the commit message as an environment variable
-          echo "COMMIT_MESSAGE=$(Get-Content commit_message.txt)" >> $COMMIT_MESSAGE
+          echo "COMMIT_MESSAGE=$(Get-Content commit_message.txt)" > $GITHUB_ENV
           echo "Last commit message: $(Get-Content commit_message.txt)"  # Print for debugging
 
       - name: 'Terraform init'
@@ -44,7 +44,7 @@ jobs:
         shell: pwsh  # Use PowerShell
         run: |
           # Retrieve the commit message from the environment variable
-          $commitMessage = $env:COMMIT_MESSAGE
+          $commitMessage = $env:GITHUB_ENV
 
           # Print the commit message for debugging
           Write-Host "Commit Message: '$commitMessage'"
