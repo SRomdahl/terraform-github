@@ -35,15 +35,14 @@ jobs:
         id: plan
         run: terraform plan
         working-directory: ${{ env.WORKING_DIR }}
-
       - name: 'Conditionally run terraform action'
         shell: pwsh  # Ensures the use of PowerShell
         run: |
           # Retrieve the commit message from environment variable
-          $commitMessage = $env:COMMIT_MESSAGE
-          
+          $commitMessage = $env:COMMIT_MESSAGE.Trim()  # Trim whitespace
+
           # Output the commit message for debugging
-          Write-Host "Commit Message: $commitMessage"
+          Write-Host "Commit Message: '$commitMessage'"
 
           # Check if the commit message contains "destroy"
           if ($commitMessage -like "*destroy*") {
@@ -54,3 +53,4 @@ jobs:
             terraform apply -auto-approve
           }
         working-directory: ${{ env.WORKING_DIR }}
+
