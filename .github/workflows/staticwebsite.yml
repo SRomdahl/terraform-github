@@ -23,18 +23,11 @@ jobs:
       - name: 'Get last commit message'
         id: get_commit_message
         run: |
-          # Attempt to get the last commit message and store it in the environment variable
+          # Get the last commit message
           COMMIT_MSG=$(git log -n 1 --pretty=format:'%s')
-          
-          # Check if the commit message is empty and set a default if it is
-          if [ -z "$COMMIT_MSG" ]; then
-            echo "COMMIT_MESSAGE=No commit message found" >> $GITHUB_ENV
-          else
-            echo "COMMIT_MESSAGE=$COMMIT_MSG" >> $GITHUB_ENV
-          fi
-
-          # List recent commits for debugging
-          git log --oneline
+          echo "COMMIT_MESSAGE=${COMMIT_MSG:-'No commit message found'}" >> $GITHUB_ENV
+          # Print the commit message for debugging
+          echo "Last commit message: $COMMIT_MSG"
 
       - name: 'Terraform init'
         id: init
@@ -47,15 +40,12 @@ jobs:
         working-directory: ${{ env.WORKING_DIR }}
 
       - name: 'Conditionally run terraform action'
-        shell: pwsh  # Ensures the use of PowerShell
+        shell: pwsh  # Use PowerShell
         run: |
-          # Print the environment variable for debugging
-          Write-Host "Commit Message from ENV: $env:COMMIT_MESSAGE"
+          # Get the commit message from the environment variable
+          $commitMessage = $env:COMMIT_MESSAGE
 
-          # Retrieve the commit message from environment variable and trim whitespace
-          $commitMessage = $env:COMMIT_MESSAGE.Trim()  # Trim whitespace
-
-          # Output the commit message for debugging
+          # Print the commit message for debugging
           Write-Host "Commit Message: '$commitMessage'"
 
           # Check if the commit message contains "destroy"
