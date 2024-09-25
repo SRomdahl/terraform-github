@@ -15,7 +15,7 @@ jobs:
       ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
       ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
       ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-      WORKING_DIR: ./web-demo  # Ensure this path is accessible in Bash
+      WORKING_DIR: web-demo  # Ensure this path is accessible in Bash without './'
 
     steps:
       - uses: actions/checkout@v3
@@ -26,8 +26,8 @@ jobs:
         run: |
           # Get the last commit message and set it as an environment variable
           COMMIT_MESSAGE=$(git log -n 1 --pretty=format:'%s')
-          echo "COMMIT_MESSAGE=$COMMIT_MESSAGE" >> $GITHUB_ENV
-          echo "Last commit message: '$COMMIT_MESSAGE'"  # Print for debugging
+          echo "COMMIT_MESSAGE=${COMMIT_MESSAGE}" >> $GITHUB_ENV
+          echo "Last commit message: '${COMMIT_MESSAGE}'"  # Print for debugging
 
       - name: 'Terraform init'
         id: init
@@ -45,10 +45,10 @@ jobs:
         shell: bash  # Use Bash
         run: |
           # Retrieve the commit message from the environment variable
-          commitMessage=$COMMIT_MESSAGE
+          commitMessage=${COMMIT_MESSAGE}
 
           # Print the commit message for debugging
-          echo "Commit Message: '$commitMessage'"
+          echo "Commit Message: '${commitMessage}'"
 
           # Check if the commit message contains "destroy"
           if [[ "$commitMessage" == *"destroy"* ]]; then
