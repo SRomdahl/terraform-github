@@ -45,7 +45,7 @@ jobs:
         shell: pwsh  # Use PowerShell
         run: |
           # Retrieve the commit message from the environment variable
-          $commitMessage = COMMIT_MESSAGE
+          $commitMessage = $env:COMMIT_MESSAGE
 
           # Print the commit message for debugging
           Write-Host "Commit Message: '$commitMessage'"
