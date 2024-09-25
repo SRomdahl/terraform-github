@@ -23,9 +23,19 @@ jobs:
       - name: 'Get last commit message'
         id: get_commit_message
         run: |
-          echo "COMMIT_MESSAGE=$(git log -n 1 --pretty=format:'%s')" >> $GITHUB_ENV
-          git log --oneline  # List recent commits for debugging
-      
+          # Attempt to get the last commit message and store it in the environment variable
+          COMMIT_MSG=$(git log -n 1 --pretty=format:'%s')
+          
+          # Check if the commit message is empty and set a default if it is
+          if [ -z "$COMMIT_MSG" ]; then
+            echo "COMMIT_MESSAGE=No commit message found" >> $GITHUB_ENV
+          else
+            echo "COMMIT_MESSAGE=$COMMIT_MSG" >> $GITHUB_ENV
+          fi
+
+          # List recent commits for debugging
+          git log --oneline
+
       - name: 'Terraform init'
         id: init
         run: terraform init
@@ -35,10 +45,14 @@ jobs:
         id: plan
         run: terraform plan
         working-directory: ${{ env.WORKING_DIR }}
+
       - name: 'Conditionally run terraform action'
         shell: pwsh  # Ensures the use of PowerShell
         run: |
-          # Retrieve the commit message from environment variable
+          # Print the environment variable for debugging
+          Write-Host "Commit Message from ENV: $env:COMMIT_MESSAGE"
+
+          # Retrieve the commit message from environment variable and trim whitespace
           $commitMessage = $env:COMMIT_MESSAGE.Trim()  # Trim whitespace
 
           # Output the commit message for debugging
@@ -53,4 +67,3 @@ jobs:
             terraform apply -auto-approve
           }
         working-directory: ${{ env.WORKING_DIR }}
-
