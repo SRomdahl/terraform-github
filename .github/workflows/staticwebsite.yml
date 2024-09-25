@@ -28,7 +28,7 @@ jobs:
           pwd
           git log -n 1 --pretty=format:'%s' > commit_message.txt
           # Set the commit message as an environment variable
-          $env:COMMIT_MESSAGE = Get-Content commit_message.txt
+          echo "COMMIT_MESSAGE=$(Get-Content commit_message.txt)" > $GITHUB_ENV
           echo "Last commit message: $(Get-Content commit_message.txt)"  # Print for debugging
 
       - name: 'Terraform init'
@@ -46,6 +46,7 @@ jobs:
         run: |
           # Retrieve the commit message from the environment variable
           $commitMessage = $env:COMMIT_MESSAGE
+          pwd
 
           # Print the commit message for debugging
           Write-Host "Commit Message: '$commitMessage'"
