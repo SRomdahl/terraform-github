@@ -15,47 +15,46 @@ jobs:
       ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
       ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
       ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-      WORKING_DIR: web-demo  # Ensure this path is accessible in Bash without './'
+      WORKING_DIR: ./web-demo
 
     steps:
       - uses: actions/checkout@v3
 
       - name: 'Get last commit message'
         id: get_commit_message
-        shell: bash  # Specify Bash as the shell
+        shell: pwsh  # Specify PowerShell as the shell
         run: |
-          # Get the last commit message and set it as an environment variable
-          COMMIT_MESSAGE=$(git log -n 1 --pretty=format:'%s')
-          echo "COMMIT_MESSAGE=${COMMIT_MESSAGE}" >> $GITHUB_ENV
-          echo "Last commit message: '${COMMIT_MESSAGE}'"  # Print for debugging
+          # Use Git to get the last commit message and write it to a file
+          git log -n 1 --pretty=format:'%s' > commit_message.txt
+          # Set the commit message as an environment variable
+          echo "COMMIT_MESSAGE=$(Get-Content commit_message.txt)" >> $GITHUB_ENV
+          echo "Last commit message: $(Get-Content commit_message.txt)"  # Print for debugging
 
       - name: 'Terraform init'
         id: init
-        shell: bash  # Use Bash
         run: terraform init
-        working-directory: "${{ github.workspace }}/${{ env.WORKING_DIR }}"  # Correctly reference working directory
+        working-directory: ${{ env.WORKING_DIR }}
 
       - name: 'Terraform plan'
         id: plan
-        shell: bash  # Use Bash
         run: terraform plan
-        working-directory: "${{ github.workspace }}/${{ env.WORKING_DIR }}"  # Correctly reference working directory
+        working-directory: ${{ env.WORKING_DIR }}
 
       - name: 'Conditionally run terraform action'
-        shell: bash  # Use Bash
+        shell: pwsh  # Use PowerShell
         run: |
           # Retrieve the commit message from the environment variable
-          commitMessage=${COMMIT_MESSAGE}
+          $commitMessage = $env:COMMIT_MESSAGE
 
           # Print the commit message for debugging
-          echo "Commit Message: '${commitMessage}'"
+          Write-Host "Commit Message: '$commitMessage'"
 
           # Check if the commit message contains "destroy"
-          if [[ "$commitMessage" == *"destroy"* ]]; then
-            echo "Executing terraform destroy..."
+          if ($commitMessage -like "*destroy*") {
+            Write-Host "Executing terraform destroy..."
             terraform destroy -auto-approve
-          else
-            echo "Executing terraform apply..."
+          } else {
+            Write-Host "Executing terraform apply..."
             terraform apply -auto-approve
-          fi
-        working-directory: "${{ github.workspace }}/${{ env.WORKING_DIR }}"  # Correctly reference working directory
+          }
+        working-directory: ${{ env.WORKING_DIR }}
