@@ -30,6 +30,7 @@ jobs:
           # Set the commit message as an environment variable
           echo "COMMIT_MESSAGE=$(Get-Content commit_message.txt)" > $GITHUB_ENV
           echo "Last commit message: $(Get-Content commit_message.txt)"  # Print for debugging
+        working-directory: ${{ env.WORKING_DIR }}
 
       - name: 'Terraform init'
         id: init
@@ -45,8 +46,8 @@ jobs:
         shell: pwsh  # Use PowerShell
         run: |
           # Retrieve the commit message from the environment variable
-          $commitMessage = $env:COMMIT_MESSAGE
-          pwd
+          
+          $commitMessage = Get-Content commit_message.txt
 
           # Print the commit message for debugging
           Write-Host "Commit Message: '$commitMessage'"
