@@ -27,7 +27,7 @@ jobs:
           # Use Git to get the last commit message and write it to a file
           git log -n 1 --pretty=format:'%s' > commit_message.txt
           # Set the commit message as an environment variable
-          echo "COMMIT_MESSAGE=$(Get-Content commit_message.txt)" >> $GITHUB_ENV
+          echo "COMMIT_MESSAGE=$(Get-Content commit_message.txt)" >> $COMMIT_MESSAGE
           echo "Last commit message: $(Get-Content commit_message.txt)"  # Print for debugging
 
       - name: 'Terraform init'
@@ -50,7 +50,7 @@ jobs:
           Write-Host "Commit Message: '$commitMessage'"
 
           # Check if the commit message contains "destroy"
-          if (commit_message.txt -like "*destroy*") {
+          if ($commitMessage -like "*destroy*") {
             Write-Host "Executing terraform destroy..."
             terraform destroy -auto-approve
           } else {
