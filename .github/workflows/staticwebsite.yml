@@ -44,7 +44,7 @@ jobs:
         shell: pwsh  # Use PowerShell
         run: |
           # Retrieve the commit message from the environment variable
-          $commitMessage = $env:GITHUB_ENV.COMMIT_MESSAGE
+          $commitMessage = Get-Content commit_message.txt
 
           # Print the commit message for debugging
           Write-Host "Commit Message: '$commitMessage'"
