@@ -3,7 +3,7 @@ name: web
 on: 
   push:
     paths:
-      - '/web-demo/**'
+      - 'web-demo/**'
 
   workflow_dispatch:
     inputs:
