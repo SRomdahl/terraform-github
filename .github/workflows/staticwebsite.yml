@@ -37,11 +37,16 @@ jobs:
           id: commit
           run: echo "::set-output name=message::${git log --format=%B -n 1}"
         - name: 'Conditionally run terraform action'
-          shell: pwsh  # Ensure PowerShell is used
+          shell: pwsh  # Ensures the use of PowerShell
           run: |
-            if (${{ steps.commit.outputs.message }} -like "*destroy*") {
+            # Retrieve the commit message
+            $commitMessage = "${{ steps.commit.outputs.message }}"
+        
+            # Check if the commit message contains "destroy"
+            if ($commitMessage -like "*destroy*") {
               terraform destroy -auto-approve
             } else {
               terraform apply -auto-approve
             }
           working-directory: ${{ env.WORKING_DIR }}
+        
