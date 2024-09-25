@@ -22,8 +22,10 @@ jobs:
 
       - name: 'Get last commit message'
         id: get_commit_message
-        run: echo "COMMIT_MESSAGE=$(git log --format=%B -n 1)" >> $GITHUB_ENV
-
+        run: |
+          echo "COMMIT_MESSAGE=$(git log -n 1 --pretty=format:'%s')" >> $GITHUB_ENV
+          git log --oneline  # List recent commits for debugging
+      
       - name: 'Terraform init'
         id: init
         run: terraform init
