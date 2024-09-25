@@ -5,6 +5,8 @@ on:
     paths:
       - 'web-demo/**'
 
+ 
+      
 jobs:
   terraform:
     runs-on: self-hosted
@@ -18,43 +20,28 @@ jobs:
       WORKING_DIR: ./web-demo
 
     steps:
-      - uses: actions/checkout@v3
+        - uses: actions/checkout@v3
 
-      - name: 'Get last commit message'
-        id: get_commit_message
-        run: |
-          # Get the last commit message
-          COMMIT_MSG=$(git log -n 1 --pretty=format:'%s')
-          # Set the COMMIT_MESSAGE environment variable
-          echo "COMMIT_MESSAGE=${COMMIT_MSG:-'No commit message found'}" >> $GITHUB_ENV
-          # Print the commit message for debugging
-          echo "Last commit message: $COMMIT_MSG"
+        - name: 'Terraform init'
+          id: init
+          run: terraform init
+          working-directory: ${{ env.WORKING_DIR }}
 
-      - name: 'Terraform init'
-        id: init
-        run: terraform init
-        working-directory: ${{ env.WORKING_DIR }}
+          
+        - name: 'Terraform plan'
+          id: plan
+          run: terraform plan
+          working-directory: ${{ env.WORKING_DIR }}
 
-      - name: 'Terraform plan'
-        id: plan
-        run: terraform plan
-        working-directory: ${{ env.WORKING_DIR }}
-
-      - name: 'Conditionally run terraform action'
-        shell: pwsh  # Use PowerShell for this step
-        run: |
-          # Get the commit message from the environment variable
-          $commitMessage = $env:COMMIT_MESSAGE
-
-          # Print the commit message for debugging
-          Write-Host "Commit Message: '$commitMessage'"
-
-          # Check if the commit message contains "destroy"
-          if ($commitMessage -like "*destroy*") {
-            Write-Host "Executing terraform destroy..."
-            terraform destroy -auto-approve
-          } else {
-            Write-Host "Executing terraform apply..."
-            terraform apply -auto-approve
-          }
-        working-directory: ${{ env.WORKING_DIR }}
+        - name: 'Check last commit message'
+          id: commit
+          run: echo "::set-output name=message::${git log --format=%B -n 1}"
+        - name: 'Conditionally run terraform action'
+          run: |
+            if [[ "${{ steps.commit.outputs.message}}" == *"destroy"* ]]; then 
+              terraform destroy -auto-approve
+            else
+              terraform apply -auto-approve
+            fi
+          working-directory: ${{ env.WORKING_DIR }}
+          
