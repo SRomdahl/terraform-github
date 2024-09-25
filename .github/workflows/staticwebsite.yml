@@ -39,11 +39,16 @@ jobs:
         run: |
           # Retrieve the commit message from environment variable
           $commitMessage = $env:COMMIT_MESSAGE
-        
+          
+          # Output the commit message for debugging
+          Write-Host "Commit Message: $commitMessage"
+
           # Check if the commit message contains "destroy"
           if ($commitMessage -like "*destroy*") {
+            Write-Host "Executing terraform destroy..."
             terraform destroy -auto-approve
           } else {
+            Write-Host "Executing terraform apply..."
             terraform apply -auto-approve
           }
         working-directory: ${{ env.WORKING_DIR }}
