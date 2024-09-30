@@ -44,5 +44,3 @@ resource "azurerm_storage_blob" "index_html" {
 output "primary_web_endpoint" {
     value = azurerm_storage_account.sa_web.primary_web_endpoint
 }
-
-//Destroy now please please please KOM IGJEN DA FOR FAEN JÆVLA KUKHUE FITTEFAEN GPT FAEN GPT HELVETE fdjkgdjfgdfjghllfsdkfjsdfhdssdfsfdsldfjshdjfhsdklfsdjflsdfjkhsdkjfshsdjkfhsdsdkjfhdfsdfkjsdfsdfgdfhdifjghsdfjsdfhsldfngdfgnmbsdlfjsdjkfhdfhdflkkgdøfgjhdkfjhsjdlfsdkjfhjkdjfgdfjkhdlkjfghdlkjfghdlkjfghdfkljghdflkjghsdlkghsdlfkghsdlkghsdlkjghsdffkljgh
