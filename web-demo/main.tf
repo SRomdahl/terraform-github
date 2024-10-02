@@ -37,7 +37,7 @@ resource "azurerm_storage_blob" "index_html" {
     storage_account_name = azurerm_storage_account.sa_web.name
     storage_container_name = "$web"
     type = "Block"
-    source_content = "<html><head><title>Welcome to Azure Storage Static Website</title></head><body>${terraform.workspace}</body></html>"
+    source_content = "<html><head><title>Welcome to Azure Storage Static Website</title></head><body>${terraform.workspace} is the current workspace</body></html>"
     content_type = "text/html"
 }
 
