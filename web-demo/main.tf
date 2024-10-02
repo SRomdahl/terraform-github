@@ -37,11 +37,10 @@ resource "azurerm_storage_blob" "index_html" {
     storage_account_name = azurerm_storage_account.sa_web.name
     storage_container_name = "$web"
     type = "Block"
-    source = "${path.module}/index.html"
+    source_content = "<html><head><title>Welcome to Azure Storage Static Website</title></head><body>${terraform.workspace}</body></html>"
     content_type = "text/html"
 }
 
 output "primary_web_endpoint" {
     value = azurerm_storage_account.sa_web.primary_web_endpoint
 }
-//dfkgjdhfg
