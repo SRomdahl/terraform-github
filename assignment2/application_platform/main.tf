@@ -21,3 +21,14 @@ provider "azurerm" {
     }
   subscription_id = "7c064ed9-c59f-4935-938b-f1a654d088a7"
 }
+
+module "global" {
+  source = "../global"
+}
+
+module "app_service" {
+  source = "../modules/app_service"
+  app_name = var.app_name
+  rg_name = module.global.rg_name
+  location = module.global.location
+}

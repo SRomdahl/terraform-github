@@ -1,2 +1,3 @@
 rg_name = "SSR-rg-assignment2-prod"
 location = "westeurope"
+app_name = "SSR-app-assignment2-prod"
