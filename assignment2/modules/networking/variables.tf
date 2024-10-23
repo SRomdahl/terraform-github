@@ -19,3 +19,16 @@ variable "subnet_name" {
 variable "nsg_name" {
   type = string
 }
+
+# Load balancer variables
+variable "lb_name" {
+  type = string
+}
+
+variable "ip_config_name" {
+  type = string
+}
+
+variable "pub_ip" {
+  type = string
+}

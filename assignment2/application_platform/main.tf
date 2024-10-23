@@ -38,3 +38,11 @@ module "app_service" {
   rg_name = data.terraform_remote_state.global.outputs.resource_group_name
   location = data.terraform_remote_state.global.outputs.resource_group_location
 }
+
+module "database" {
+    source = "../modules/database"
+    rg_name = data.terraform_remote_state.global.outputs.resource_group_name
+    location = data.terraform_remote_state.global.outputs.resource_group_location
+    db_name = var.db_name
+    db_server_name = var.db_server_name
+}
