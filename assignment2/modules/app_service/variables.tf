@@ -7,6 +7,7 @@ variable "location" {
   type = string
 }
 
+# App Service variables
 variable "app_service_plan_name" {
   type = string
 }

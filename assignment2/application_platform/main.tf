@@ -13,6 +13,15 @@ terraform {
   }
 }
 
+data "terraform_remote_state" "global" {
+    backend = "azurerm"
+    config = {
+        resource_group_name   = "SSR-tfstate-backend-rg"
+        storage_account_name  = "sabe63ui74zo"
+        container_name        = "ssrterraformcontainerbackend"
+        key                   = "ssr.assignment2global.terraform.tfstate"
+    }
+}
 provider "azurerm" {
     features {
         resource_group {
@@ -22,13 +31,10 @@ provider "azurerm" {
   subscription_id = "7c064ed9-c59f-4935-938b-f1a654d088a7"
 }
 
-module "global" {
-  source = "../global"
-}
-
 module "app_service" {
   source = "../modules/app_service"
-  app_name = var.app_name
-  rg_name = module.global.rg_name
-  location = module.global.location
+  app_service_plan_name = var.app_service_plan_name
+  app_service_name = var.app_service_name
+  rg_name = data.terraform_remote_state.global.outputs.resource_group_name
+  location = data.terraform_remote_state.global.outputs.resource_group_location
 }
