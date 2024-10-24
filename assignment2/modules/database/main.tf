@@ -30,6 +30,6 @@ resource "azurerm_mssql_database" "example" {
   enclave_type = "VBS"
 
   lifecycle {
-    prevent_destroy = true
+    prevent_destroy = false
   }
 }

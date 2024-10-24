@@ -29,6 +29,6 @@ variable "ip_config_name" {
   type = string
 }
 
-variable "pub_ip" {
+variable "pub_ip_name" {
   type = string
 }
