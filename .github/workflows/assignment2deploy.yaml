@@ -1,0 +1,148 @@
+name: 'Terraform CI/CD'
+
+on:
+  push:
+    paths:
+      - 'assignment2/**'
+  workflow_dispatch:
+
+env:
+  ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+  ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }} 
+  ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+  ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+  WORKING_DIR_GLOBAL: ./assignment2/global
+  WORKING_DIR_APPLICATION_PLATFORM: ./assignment2/application_platform
+  WORKING_DIR_CORE_INFRASTRUCTURE: ./assignment2/core_infrastructure
+  WORKING_DIR_NN_DEPLOYMENT: ./assignment2/nn_deployment
+
+jobs:  
+  dev_stage:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Terraform init global
+        run: terraform init
+        working-directory: ${{ env.WORKING_DIR_GLOBAL }}
+
+      - name: Terraform workspace select or create dev global
+        run: terraform workspace select dev || terraform workspace new dev
+        working-directory: ${{ env.WORKING_DIR_GLOBAL }}
+
+      - name: Terraform apply dev global
+        run: terraform apply -auto-approve
+        working-directory: ${{ env.WORKING_DIR_GLOBAL }}
+
+      - name: Terraform init application platform
+        run: terraform init
+        working-directory: ${{ env.WORKING_DIR_APPLICATION_PLATFORM }}
+
+      - name: Terraform workspace select or create dev application platform
+        run: terraform workspace select dev || terraform workspace new dev
+        working-directory: ${{ env.WORKING_DIR_APPLICATION_PLATFORM }}
+
+      - name: Terraform apply dev application platform
+        run: terraform apply -auto-approve
+        working-directory: ${{ env.WORKING_DIR_APPLICATION_PLATFORM }}
+
+      - name: Terraform init core infrastructure
+        run: terraform init
+        working-directory: ${{ env.WORKING_DIR_CORE_INFRASTRUCTURE }}
+
+      - name: Terraform workspace select or create dev core infrastructure
+        run: terraform workspace select dev || terraform workspace new dev
+        working-directory: ${{ env.WORKING_DIR_CORE_INFRASTRUCTURE }}
+
+      - name: Terraform apply dev core infrastructure
+        run: terraform apply -auto-approve
+        working-directory: ${{ env.WORKING_DIR_CORE_INFRASTRUCTURE }}
+
+  stage_prod:
+    needs: dev_stage
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Terraform init global
+        run: terraform init
+        working-directory: ${{ env.WORKING_DIR_GLOBAL }}
+
+      - name: Terraform workspace select or create dev_stage global
+        run: terraform workspace select stage || terraform workspace new stage
+        working-directory: ${{ env.WORKING_DIR_GLOBAL }}
+
+      - name: Terraform apply stage global
+        run: terraform apply -auto-approve
+        working-directory: ${{ env.WORKING_DIR_GLOBAL }}
+
+      - name: Terraform init application platform
+        run: terraform init
+        working-directory: ${{ env.WORKING_DIR_APPLICATION_PLATFORM }}
+
+      - name: Terraform workspace select or create dev_stage application platform
+        run: terraform workspace select stage || terraform workspace new stage
+        working-directory: ${{ env.WORKING_DIR_APPLICATION_PLATFORM }}
+
+      - name: Terraform apply stage application platform
+        run: terraform apply -auto-approve
+        working-directory: ${{ env.WORKING_DIR_APPLICATION_PLATFORM }}
+
+      - name: Terraform init core infrastructure
+        run: terraform init
+        working-directory: ${{ env.WORKING_DIR_CORE_INFRASTRUCTURE }}
+
+      - name: Terraform workspace select or create dev_stage core infrastructure
+        run: terraform workspace select stage || terraform workspace new stage
+        working-directory: ${{ env.WORKING_DIR_CORE_INFRASTRUCTURE }}
+
+      - name: Terraform apply stage core infrastructure
+        run: terraform apply -auto-approve
+        working-directory: ${{ env.WORKING_DIR_CORE_INFRASTRUCTURE }}
+        
+  prod:
+    needs: stage_prod
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Terraform init global
+        run: terraform init
+        working-directory: ${{ env.WORKING_DIR_GLOBAL }}
+
+      - name: Terraform workspace select or create stage_prod global
+        run: terraform workspace select prod || terraform workspace new prod
+        working-directory: ${{ env.WORKING_DIR_GLOBAL }}
+
+      - name: Terraform apply prod global
+        run: terraform apply -auto-approve
+        working-directory: ${{ env.WORKING_DIR_GLOBAL }}
+
+      - name: Terraform init application platform
+        run: terraform init
+        working-directory: ${{ env.WORKING_DIR_APPLICATION_PLATFORM }}
+
+      - name: Terraform workspace select or create stage_prod application platform
+        run: terraform workspace select prod || terraform workspace new prod
+        working-directory: ${{ env.WORKING_DIR_APPLICATION_PLATFORM }}
+
+      - name: Terraform apply prod application platform
+        run: terraform apply -auto-approve
+        working-directory: ${{ env.WORKING_DIR_APPLICATION_PLATFORM }}
+
+      - name: Terraform init core infrastructure
+        run: terraform init
+        working-directory: ${{ env.WORKING_DIR_CORE_INFRASTRUCTURE }}
+
+      - name: Terraform workspace select or create stage_prod core infrastructure
+        run: terraform workspace select prod || terraform workspace new prod
+        working-directory: ${{ env.WORKING_DIR_CORE_INFRASTRUCTURE }}
+
+      - name: Terraform apply prod core infrastructure
+        run: terraform apply -auto-approve
+        working-directory: ${{ env.WORKING_DIR_CORE_INFRASTRUCTURE }}
